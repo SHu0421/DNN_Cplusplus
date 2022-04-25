@@ -4,6 +4,7 @@
 #include<cmath>
 #include<string>
 #include "conv_layer.h"
+#include "omp.h"
 using namespace std;
 
 

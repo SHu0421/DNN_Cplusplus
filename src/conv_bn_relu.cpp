@@ -4,6 +4,7 @@
 #include<cmath>
 #include<string>
 #include "conv_bn_relu.h"
+#include "omp.h"
 using namespace std;
 
 
@@ -44,6 +45,7 @@ void Conv_BN_Relu::forward_fusion(matrix &input_matrix, matrix &output_matrix, v
     // output_matrix=matrix(out_b, out_c, out_size);
     vector<vector<vector<vector<float>>>> &res=output_matrix.value;
     res.resize(out_b);
+    #pragma omp parallel for
     for (int i = 0; i < out_b; ++i) {
         res[i].resize(out_c);
         for (int j = 0; j < out_c; ++j){
@@ -54,6 +56,7 @@ void Conv_BN_Relu::forward_fusion(matrix &input_matrix, matrix &output_matrix, v
             }
         }     
     }
+    #pragma omp parallel for
     for(int batch=0; batch<out_b;batch++){
         for(int num=0;num<out_c;num++){
             for(int m=0;m<out_size;m++){

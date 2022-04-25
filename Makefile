@@ -6,11 +6,15 @@ SRCS := $(wildcard ./src/*.cpp ./*.cpp)
 
 OBJS := $(patsubst %cpp,%o,$(SRCS))
 
-CFLG = -g -Wall -I./include -std=c++11
+# use openMP
+# CFLG = -fopenmp -g -Wall -I./include -std=c++11 
+# CXX = g++-11
 
 # LDFG = -Wl, $(shell pkg-config opencv --cflags --libs)
 
+CFLG = -g -Wall -I./include -std=c++11 
 CXX = g++
+
 
 $(TARGET) : $(OBJS)
 	$(CXX) -o $(TARGET) $(OBJS) 

@@ -4,6 +4,7 @@
 #include<cmath>
 #include<string>
 #include "bn_layer.h"
+#include "omp.h"
 using namespace std;
 
 
@@ -39,6 +40,7 @@ void BN::forward(matrix &input_matrix, matrix &output_matrix){
 
     vector<vector<vector<vector<float>>>> &res=output_matrix.value;
     res.resize(batch_size);
+    #pragma omp parallel for
     for (int i = 0; i < batch_size; ++i){
         res[i].resize(channel_size);
         for (int j = 0; j < channel_size; ++j){
@@ -48,7 +50,7 @@ void BN::forward(matrix &input_matrix, matrix &output_matrix){
             }
         }     
     }
-
+    #pragma omp parallel for
     for(int i=0;i<channel_size;i++){
         for(int j=0;j<m_size;j++){
             for(int k=0;k<m_size;k++){
@@ -59,6 +61,7 @@ void BN::forward(matrix &input_matrix, matrix &output_matrix){
         }
         mean[i]=mean[i]/(batch_size*m_size*m_size);
     }
+    #pragma omp parallel for
     for(int i=0;i<channel_size;i++){
         for(int j=0;j<m_size;j++){
             for(int k=0; k<m_size;k++){
@@ -68,7 +71,7 @@ void BN::forward(matrix &input_matrix, matrix &output_matrix){
             }
         }
     }
-
+    #pragma omp parallel for
     for(int i=0;i<channel_size;i++){
         for(int j=0;j<m_size;j++){
             for(int k=0;k<m_size;k++){
@@ -101,6 +104,7 @@ void compute_backward_scale(matrix &x_norm_matrix, matrix &delta_matrix, vector<
     int channel_input=delta[0].size(); // channel size
     int size_input=delta[0][0].size();
 
+    #pragma omp parallel for
     for(int f = 0; f < channel_input; ++f){
         float sum = 0;
         for(int b = 0; b < batch_size; ++b){
@@ -125,6 +129,7 @@ void  compute_variance_delta(matrix x_matrix, matrix delta_matrix, vector<float>
     int channel_input=delta[0].size(); // channel size
     int size_input=delta[0][0].size();
 
+    #pragma omp parallel for
     for(int f = 0; f < channel_input; ++f){
         variance_delta[f] = 0;
         for(int b = 0; b < batch_size; ++b){
@@ -152,6 +157,7 @@ void compute_mean_delta(matrix &delta_matrix, matrix &x_matrix, vector<float> &m
     int size_input=delta[0][0].size();
      int base= size_input * size_input * batch_size;
 
+    #pragma omp parallel for
     for(int f = 0; f < channel_input; ++f){
         mean_delta[f] = 0;
         for(int b = 0; b < batch_size; ++b){
@@ -163,8 +169,9 @@ void compute_mean_delta(matrix &delta_matrix, matrix &x_matrix, vector<float> &m
         }
         mean_delta[f] *= (-1./sqrt(variance[f] + epsilon));
     }
-
-    //还少了与variance_delta的那部分，及得添加上
+    
+    //variance_delta的部分
+    #pragma omp parallel for
     for(int f = 0; f < channel_input; ++f){
         int sum=0;
         for(int b = 0; b < batch_size; ++b){
@@ -191,6 +198,7 @@ void normalize_delta(matrix x_matrix, vector<float> &mean, vector<float> &varian
     int size_input=delta[0][0].size();
 
     int base= size_input * size_input * batch_size;
+    #pragma omp parallel for
     for(int f = 0; f < channel_input; ++f){
         for(int b = 0; b < batch_size; ++b){
             for(int i = 0; i < size_input; ++i){

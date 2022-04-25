@@ -3,6 +3,7 @@
 #include<cmath>
 #include<string>
 #include "relu_layer.h"
+#include "omp.h"
 using namespace std;
 
 Relu::Relu(){
@@ -29,7 +30,7 @@ void Relu::forward(matrix &input_matrix, matrix &output_matrix){
             }
         }     
     }
-
+     #pragma omp parallel for
     for(int b=0;b<batch_size;b++){
         for(int i=0;i<channel_size;i++){
             for(int j=0;j<m_size;j++){
@@ -55,6 +56,7 @@ void Relu::backward(matrix &x_matrix, matrix &y_matrix, matrix &delta_matrix){
     // vector<vector<vector<vector<float>>>> dx(batch_size, vector<vector<vector<float>>>(hei_input, vector<vector<float>>(size_input, vector<float>(size_input, 0))));
     vector<vector<vector<vector<float>>>> &dx=delta_matrix.value;
 
+    #pragma omp parallel for
     for(int b=0;b<batch_size;b++){
         for(int i=0;i<hei_input;i++){
             for(int j=0;j<size_input;j++){

@@ -9,7 +9,6 @@
 #include<vector>
 #include<cmath>
 #include "conv_layer.h"
-
 using namespace std;
 
 class Conv_BN_Relu: public Conv{

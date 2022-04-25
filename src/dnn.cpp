@@ -8,6 +8,7 @@
 #include "relu_layer.h"
 #include "conv_bn_relu.h"
 #include "dnn.h"
+#include "omp.h"
 using namespace std;
 
 
@@ -33,7 +34,8 @@ void DNN::forward(matrix &input_matrix){
     cout<<"enter net forward function"<<endl;
     cout<<"layers.size():"<<layers.size()<<endl;
     if(!fuse){
-        for(int i=0;i<layers.size();i++){
+        int size=layers.size();
+        for(int i=0;i<size;i++){
             layer* l=layers[i];
             matrix out_matrix; 
             if(l->type=="conv"){
@@ -48,7 +50,8 @@ void DNN::forward(matrix &input_matrix){
             input_matrix=out_matrix;
         }
     }else{
-        for(int i=0;i<layers.size();){
+         int size=layers.size();
+        for(int i=0;i<size;){
             layer* l=layers[i];
             matrix out_matrix; 
             if(l->type=="conv"){
